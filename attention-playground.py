@@ -116,4 +116,49 @@ query 4      score         score         score         score
 
 #for each token, how much does it care about each other token
 
+print("Q shape:", Q.shape)
+print("K shape:", K.shape)
+print("V shape:", V.shape)
 
+K_transposed = K.transpose(-2, -1)
+print("K transposed shape:", K_transposed.shape)
+
+scores = Q @ K_transposed
+
+print("scores shape:", scores.shape)
+print(scores)
+
+
+"""
+Output:
+Q shape: torch.Size([1, 2, 4, 8])
+K shape: torch.Size([1, 2, 4, 8])
+V shape: torch.Size([1, 2, 4, 8])
+K transposed shape: torch.Size([1, 2, 8, 4])
+scores shape: torch.Size([1, 2, 4, 4])
+tensor([[[[ 2.1655, -1.4713,  2.5439,  3.1282],
+          [ 2.1704,  5.6811, -3.5576,  2.4307],
+          [-1.8506, -0.3029, -1.2479,  7.0405],
+          [-1.3146, -3.2209, -0.5854,  7.3494]],
+
+         [[ 0.6638,  1.5666,  0.2625, -0.7211],
+          [ 0.6177, -1.5074, -1.1462,  0.1730],
+          [-2.4481,  1.8047,  3.0576, -0.4164],
+          [ 2.8584, -1.5597, -2.8155, -1.6604]]]])
+
+two for the two heads, each table is query tokens on the left
+and key tokens on the right with the scores for each 
+higher score means query token 1 matched key token 4 the most
+
+but that could be a problem because if tokens are generated left to right
+token 1 shouldnt be allowed to look at token 4, because token 4 is in the future
+
+next step is casual masking
+should be like this:
+token 1 can look at token 1
+token 2 can look at token 1,2
+token 3 can look at token 1,2,3
+token 4 can look at token 1,2,3,4
+
+create a mask to block the upper right part of the 4x4 table
+"""
