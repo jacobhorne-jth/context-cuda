@@ -71,10 +71,10 @@ only once sentence = B = 1
 import torch
 
 
-B = 1
-H = 2
-T = 4
-D = 8
+B = 1 #one sentence
+H = 2 #different heads / views/ look at meaning, grammar, syntax, etc
+T = 4 #4 token positions (4 tokens)
+D = 8 #how many numbers per vector
 
 
 Q = torch.randn(B, H, T, D)
@@ -82,6 +82,38 @@ K = torch.randn(B, H, T, D)
 V = torch.randn(B, H, T, D)
 
 
+#Q, K, V become 3 fake tensors full of random numbers
+#each have the shape of:
+#2 sentences × 4 heads × 8 tokens × 16-dimensional vector
 
+#Q = query vectors, K = key vectors, V = value vectors
+
+#dummy numbers to understand attention math
+
+#next operation is Q compared with K
+#produces attention scores !
+
+#after doing that, shape changes to this
+# Q [B, H, T, D]
+# K [B, H, T, D]
+#scores: [B, H, T, T]
+
+#why [T, T] !!!
+ 
+#Because each token compares itself to every token
+#for ex. if T = 4, each head creates a 4 by 4 table
+
+
+'''
+            key token 1   key token 2   key token 3   key token 4
+query 1      score         score         score         score
+query 2      score         score         score         score
+query 3      score         score         score         score
+query 4      score         score         score         score
+'''
+
+# ^^^ this is for t = 4
+
+#for each token, how much does it care about each other token
 
 
