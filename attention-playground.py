@@ -162,3 +162,45 @@ token 4 can look at token 1,2,3,4
 
 create a mask to block the upper right part of the 4x4 table
 """
+
+mask = torch.tril(torch.ones(T, T))
+
+print("mask shape:", mask.shape)
+print(mask)
+
+scores_masked = scores.masked_fill(mask == 0, float("-inf"))
+
+print("masked scores shape:", scores_masked.shape)
+print(scores_masked)
+
+'''
+torch.ones(T, T)
+creates a 4by4 table of ones
+torch.tril(...) keeps only the lower triangle
+1 0 0 0
+1 1 0 0
+1 1 1 0
+1 1 1 1
+then 
+scores.masked_fill(mask == 0, float("-inf"))
+replaces blocked positions with negative infinity
+does that because later softmax turns scores into probabilities, very large negative
+becomes prob 0, so blocked get ignored
+
+Output:
+mask shape: torch.Size([4, 4])
+tensor([[1., 0., 0., 0.],
+        [1., 1., 0., 0.],
+        [1., 1., 1., 0.],
+        [1., 1., 1., 1.]])
+masked scores shape: torch.Size([1, 2, 4, 4])
+tensor([[[[-0.5739,    -inf,    -inf,    -inf],
+          [ 0.1315,  3.3302,    -inf,    -inf],
+          [-0.7941, -2.0308, -5.3198,    -inf],
+          [-1.3189, -1.5536, -3.6209,  4.6663]],
+
+         [[-0.8863,    -inf,    -inf,    -inf],
+          [-4.6488, -1.1183,    -inf,    -inf],
+          [-2.2890, -2.4832,  7.6423,    -inf],
+          [-3.6928, -2.9871, -2.1283, -0.5395]]]])
+'''
